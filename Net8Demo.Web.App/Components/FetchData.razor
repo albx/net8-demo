@@ -1,0 +1,44 @@
+﻿@page "/fetchdata"
+@layout Layout
+
+@inject Net8Demo.Web.App.Services.ForecastService ForecastService
+@attribute [StreamRendering(true)]
+
+<h3>FetchData</h3>
+<hr />
+
+@if (forecasts is null)
+{
+    <h4>Loading...</h4>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Temperature</th>
+                <th>Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in forecasts)
+            {
+                <tr>
+                    <td>@item.Date.ToString()</td>
+                    <td>@item.Temperature</td>
+                    <td>@item.Summary</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IEnumerable<Net8Demo.Web.App.Models.WeatherForecastModel>? forecasts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        forecasts = await ForecastService.GetWeatherForecastsAsync();
+    }
+}
