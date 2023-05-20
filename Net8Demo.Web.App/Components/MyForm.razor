@@ -1,0 +1,67 @@
+﻿@page "/myform"
+@layout Layout
+
+@using Microsoft.AspNetCore.Components.Forms
+@inject FormDataProvider FormData
+
+<h3>MyForm</h3>
+
+<EditForm method="POST" Model="model" OnValidSubmit="HandleSubmit">
+    <div class="mb-3">
+        <label>Title</label>
+        <InputText @bind-Value="model.Title" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Values</label>
+        <InputSelect @bind-Value="model.Value" class="form-control">
+            @foreach (var value in values)
+            {
+                <option value="@value">@value</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="mb-3">
+        <button class="btn btn-primary" type="submit">Submit</button>
+    </div>
+</EditForm>
+
+@code {
+    private ViewModel model = new();
+
+    private int[] values = new[] { 1, 5, 10, 100 };
+
+    private void HandleSubmit()
+    {
+        Console.WriteLine(model);
+    }
+
+    protected override void OnInitialized()
+    {
+        if (FormData.Entries.TryGetValue(nameof(ViewModel.Title), out var titleValues))
+        {
+            model.Title = titleValues.First() ?? string.Empty;
+        }
+
+        if (FormData.Entries.TryGetValue(nameof(ViewModel.Value), out var valueValues))
+        {
+            var v = valueValues.First();
+            if (v is null)
+            {
+                model.Value = 0;
+            }
+            else
+            {
+                model.Value = Convert.ToInt32(v);
+            }
+        }
+    }
+
+    record ViewModel
+    {
+        public string Title { get; set; } = "Hello Blazor SSR";
+
+        public int Value { get; set; } = 5;
+    }
+}
